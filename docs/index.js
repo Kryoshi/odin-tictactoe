@@ -68,17 +68,16 @@ function createBoard() {
     };
 
     const checkDiagonal = (rowKey, columnKey) => {
-        if ((rowKey + columnKey) ===
-            "topleft" ||
-            "middlecenter" ||
-            "bottomright") {
+        const key = rowKey + columnKey;
+        if (key === "topleft" ||
+            key === "middlecenter" ||
+            key === "bottomright") {
                 if (compareCells(AXES.diagonal_left)) {
                     return AXES.diagonal_left;
                 };
-        } else if ((rowKey + columnKey) ===
-            "topright" ||
-            "middlecenter" ||
-            "bottomleft") {
+        } else if (key === "topright" ||
+            key === "middlecenter" ||
+            key === "bottomleft") {
                 if (compareCells(AXES.diagonal_right)) {
                     return AXES.diagonal_right;
                 };
@@ -91,6 +90,7 @@ function createBoard() {
         const secondCell = cells[1].split(" ");
         const thirdCell = cells[2].split(" ");
 
+        console.log(firstCell, secondCell, thirdCell)
 
         return ((getMarker(firstCell[0], firstCell[1])
                 ===
@@ -99,7 +99,6 @@ function createBoard() {
                 (getMarker(firstCell[0], firstCell[1])
                 ===
                 getMarker(thirdCell[0], thirdCell[1])));
-
     };
 
     function createRow() {
@@ -183,13 +182,15 @@ const game = (function () {
 const display = (function () {
     const grid = document.querySelector(".grid");
     const text = document.querySelector(".player");
+    let player = game.getActivePlayer();
+
     let win;
+    text.textContent = `Current Player: ${player.getName()} Marker: ${player.getMarker()}`;
     grid.addEventListener("click", (e) => {
         if (e.target.tagName === "BUTTON") {
             let row = e.target.parentElement.className;
             let column = e.target.className;
-            const player = game.getActivePlayer();
-            text.textContent = `Current Player: ${player.getName()} Marker: ${player.getMarker()}`;
+            player = game.getActivePlayer();
             if(game.playRound(row, column)) {
                 e.target.textContent = player.getMarker();
 
@@ -202,8 +203,9 @@ const display = (function () {
                         text.textContent = "It's a draw!"
                     }
                 }
+                game.switchPlayerTurn();
+                text.textContent = `Current Player: ${player.getName()} Marker: ${player.getMarker()}`;
             }
-            game.switchPlayerTurn();
         }
     });
 })();
