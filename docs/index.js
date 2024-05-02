@@ -115,7 +115,6 @@ function createBoard() {
     
         const setMarker = (_marker) => {
             marker = _marker;
-            print();
         };
     
         const getMarker = () => marker;
@@ -123,11 +122,7 @@ function createBoard() {
         return {setMarker, getMarker};
     }
 
-    const print = () => console.log(`${board["top"]["left"].getMarker()} ${board["top"]["center"].getMarker()} ${board["top"]["right"].getMarker()}\n` +
-                                    `${board["middle"]["left"].getMarker()} ${board["middle"]["center"].getMarker()} ${board["middle"]["right"].getMarker()}\n` +
-                                    `${board["bottom"]["left"].getMarker()} ${board["bottom"]["center"].getMarker()} ${board["bottom"]["right"].getMarker()}`);
-
-    return {placeMarker, getMarker, checkRow, checkColumn, checkDiagonal, print};
+    return {placeMarker, getMarker, checkRow, checkColumn, checkDiagonal};
 }
 
 function createPlayer(name = "", marker = "") {
@@ -159,7 +154,6 @@ const game = (function () {
 
     const playRound = (row, column) => {
         board.placeMarker(row, column, getActivePlayer().getMarker());
-        board.print();
         lastMove.row = row;
         lastMove.column = column;
     };
@@ -178,11 +172,3 @@ const game = (function () {
 function coinFlip() {
     return Math.floor(Math.random() * 2);
 }
-
-let win = false;
-while (!win) {
-    game.switchPlayerTurn();
-    game.playRound(prompt(), prompt());
-    win = game.checkWin();
-}
-console.log(win);
