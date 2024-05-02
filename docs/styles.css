@@ -1,0 +1,78 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: 16px;
+
+    --color-theme-main: #0c0a09;
+    --color-theme-main-bg: #09090b;
+    --color-theme-main-shadow: #6b7280;
+
+    --color-theme-main-headings: #e5e7eb;
+    --color-theme-main-text: #fafaf9;
+
+    --color-theme-user: #059669;
+
+    --color-theme-read: #059669;
+    --color-theme-unread: #f59e0b;
+    --color-theme-delete: #ef4444;
+}
+
+h1,h2,h3,h4,h5,h6,p,a {
+    margin: 0;
+    padding: 0;
+    color: inherit;
+}
+
+button {
+    appearance: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+h6 {
+    font-size: 1rem;
+}
+
+h5 {
+    font-size: 1.1rem;
+}
+
+h4 {
+    font-size: 1.3rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+h2 {
+    font-size: 1.7rem;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+
+    height: 100%
+}
