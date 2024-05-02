@@ -21,8 +21,8 @@ function createBoard() {
     const placeMarker = (rowKey, columnKey, marker) => {
         if (!getMarker(rowKey, columnKey)) {
             board[rowKey][columnKey].setMarker(marker);
-            console.log(getMarker(rowKey, columnKey));
-        };
+            return true;
+        } else return false;
     };
 
     const getMarker = (rowKey, columnKey) => board[rowKey][columnKey].getMarker();
@@ -141,8 +141,9 @@ function createPlayer(name = "", marker = "") {
 
 const game = (function () {
     const board = createBoard();
-    const players = [createPlayer("X","X"), createPlayer("O","O")];
+    const players = [createPlayer("Player 1","X"), createPlayer("Player 2","O")];
     let activePlayer = players[coinFlip()];
+    let rounds = 0;
 
     const lastMove = {row : 0, column: 0};
 
@@ -153,22 +154,56 @@ const game = (function () {
     const getActivePlayer = () => activePlayer;
 
     const playRound = (row, column) => {
-        board.placeMarker(row, column, getActivePlayer().getMarker());
-        lastMove.row = row;
-        lastMove.column = column;
+        if (board.placeMarker(row, column, getActivePlayer().getMarker())) {
+            rounds++;
+            lastMove.row = row;
+            lastMove.column = column;
+            return true;
+        } else return false;
     };
 
     const checkWin = () => {
+        if (rounds === 9) {
+            return {outcome: "draw"};
+        }
         let win  = board.checkRow(lastMove.row);
         if (!win) win = board.checkColumn(lastMove.column);
         if (!win) win = board.checkDiagonal(lastMove.row, lastMove.column);
         if (!win) return false;
-        else return {name : activePlayer.getName(), lastMove, win};
+        else return {outcome: "win", lastMove, win};
+    }
+
+    function coinFlip() {
+        return Math.floor(Math.random() * 2);
     }
 
     return {switchPlayerTurn, getActivePlayer, playRound, checkWin};
 })();
 
-function coinFlip() {
-    return Math.floor(Math.random() * 2);
-}
+const display = (function () {
+    const grid = document.querySelector(".grid");
+    const text = document.querySelector(".player");
+    let win;
+    grid.addEventListener("click", (e) => {
+        if (e.target.tagName === "BUTTON") {
+            let row = e.target.parentElement.className;
+            let column = e.target.className;
+            const player = game.getActivePlayer();
+            text.textContent = `Current Player: ${player.getName()} Marker: ${player.getMarker()}`;
+            if(game.playRound(row, column)) {
+                e.target.textContent = player.getMarker();
+
+                win = game.checkWin();
+                if (win.outcome) {
+                    if (win.outcome === "win") {
+                        text.textContent = `${player.getName()} wins!`
+                        return;
+                    } else {
+                        text.textContent = "It's a draw!"
+                    }
+                }
+            }
+            game.switchPlayerTurn();
+        }
+    });
+})();

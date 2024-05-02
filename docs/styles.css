@@ -76,3 +76,8 @@ html, body {
 
     height: 100%
 }
+
+.grid button {
+    width: 5rem;
+    height: 5rem;
+}
