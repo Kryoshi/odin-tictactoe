@@ -8,25 +8,22 @@
     <script src="index.js" defer></script>
 </head>
 <body>
-    <div class="player">
-        BANANA
+    <header>
+        <form action="" method="post" id="newgame">
+            <span>
+                <label for="player-one">X: </label>
+                <input type="text" id="player-one" name="player-one" class="player-name" value="Player 1">
+            </span>
+            <button type="submit">New Game</button>
+            <span>
+                <label for="player-two">O: </label>
+                <input type="text" id="player-two" name="player-two" class="player-name" value="Player 2">
+            </span>
+        </form>
+    </header>
+    <div id="content">
     </div>
-    <div class="grid">
-        <div class="top">
-            <button class="left"></button>
-            <button class="center"></button>
-            <button class="right"></button>
-        </div>
-        <div class="middle">
-            <button class="left"></button>
-            <button class="center"></button>
-            <button class="right"></button>
-        </div>
-        <div class="bottom">
-            <button class="left"></button>
-            <button class="center"></button>
-            <button class="right"></button>
-        </div>
+    <div id="display">
     </div>
 </body>
 </html>

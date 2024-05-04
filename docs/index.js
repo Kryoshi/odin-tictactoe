@@ -90,8 +90,6 @@ function createBoard() {
         const secondCell = cells[1].split(" ");
         const thirdCell = cells[2].split(" ");
 
-        console.log(firstCell, secondCell, thirdCell)
-
         return ((getMarker(firstCell[0], firstCell[1])
                 ===
                 getMarker(secondCell[0], secondCell[1]))
@@ -138,13 +136,24 @@ function createPlayer(name = "", marker = "") {
     return {setMarker, getMarker, setName, getName};
 }
 
-const game = (function () {
-    const board = createBoard();
-    const players = [createPlayer("Player 1","X"), createPlayer("Player 2","O")];
-    let activePlayer = players[coinFlip()];
+const gameController = (function () {
+    let board;
+    let players;
+    let activePlayer;
     let rounds = 0;
+    let gameOver = false;
+    let winningAxis;
+    const lastMove = {row: null, column: null};
 
-    const lastMove = {row : 0, column: 0};
+    const resetGame = (playerOne, playerTwo) => {
+        gameOver = false;
+        board = createBoard();
+        players = [createPlayer(playerOne,"X"), createPlayer(playerTwo,"O")];
+        activePlayer = players[coinFlip()];
+        rounds = 0;
+        lastMove.row = null;
+        lastMove.column = null;
+    };
 
     const switchPlayerTurn = () => {
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
@@ -153,59 +162,149 @@ const game = (function () {
     const getActivePlayer = () => activePlayer;
 
     const playRound = (row, column) => {
-        if (board.placeMarker(row, column, getActivePlayer().getMarker())) {
-            rounds++;
-            lastMove.row = row;
-            lastMove.column = column;
-            return true;
-        } else return false;
+        if (!gameOver) {
+            if (board.placeMarker(row, column, getActivePlayer().getMarker())) {
+                rounds++;
+                lastMove.row = row;
+                lastMove.column = column;
+                return true;
+            } else return false;
+        }
     };
 
     const checkWin = () => {
         if (rounds === 9) {
+            gameOver = true;
             return {outcome: "draw"};
         }
-        let win  = board.checkRow(lastMove.row);
+        let win  = board.checkRow(lastMove.row); 
         if (!win) win = board.checkColumn(lastMove.column);
         if (!win) win = board.checkDiagonal(lastMove.row, lastMove.column);
         if (!win) return false;
-        else return {outcome: "win", lastMove, win};
+        else {
+            gameOver = true;
+            winningAxis = win;
+            return {outcome: "win"};
+        }
     }
 
     function coinFlip() {
         return Math.floor(Math.random() * 2);
     }
 
-    return {switchPlayerTurn, getActivePlayer, playRound, checkWin};
+    return {resetGame, switchPlayerTurn, getActivePlayer, playRound, checkWin};
 })();
 
-const display = (function () {
-    const grid = document.querySelector(".grid");
-    const text = document.querySelector(".player");
-    let player = game.getActivePlayer();
+const gameInterface = (function () {    
 
-    let win;
-    text.textContent = `Current Player: ${player.getName()} Marker: ${player.getMarker()}`;
-    grid.addEventListener("click", (e) => {
-        if (e.target.tagName === "BUTTON") {
-            let row = e.target.parentElement.className;
-            let column = e.target.className;
-            player = game.getActivePlayer();
-            if(game.playRound(row, column)) {
-                e.target.textContent = player.getMarker();
+    const newGame = (playerOne, playerTwo) => {
+        gameController.resetGame(playerOne, playerTwo);
+        displayController.removeGrid();
+        displayController.createGrid();
+        displayController.displayTurn(gameController.getActivePlayer().getName());
+    }
 
-                win = game.checkWin();
+    const movePlayed = (element) => {
+        if (element.tagName === "BUTTON") {
+            let row = element.parentElement.className;
+            let column = element.className;
+            player = gameController.getActivePlayer();
+            if(gameController.playRound(row, column)) {
+                displayController.displayMove(element, player.getMarker());
+                win = gameController.checkWin();
                 if (win.outcome) {
                     if (win.outcome === "win") {
-                        text.textContent = `${player.getName()} wins!`
-                        return;
-                    } else {
-                        text.textContent = "It's a draw!"
+                        displayController.displayWin(player.getName())
+                    } else if (win.outcome === "draw"){
+                        displayController.displayDraw();
                     }
+                    return;
                 }
-                game.switchPlayerTurn();
-                text.textContent = `Current Player: ${player.getName()} Marker: ${player.getMarker()}`;
+                gameController.switchPlayerTurn();
+                displayController.displayTurn(player.getName());
             }
         }
+    }
+    return {newGame, movePlayed};
+})();
+
+const displayController = (function () {
+    const content = document.querySelector('#content');
+    const display = document.querySelector('#display');
+    const newGame = document.querySelector('#newgame');
+    const players = document.querySelectorAll('input');
+
+    newGame.addEventListener('submit', (e) => {
+        e.preventDefault();
+        for (const player of players) {
+            player.disabled = true;
+        }
+        const playerOne = players[0].value;
+        const playerTwo = players[1].value;
+        gameInterface.newGame(playerOne, playerTwo);
     });
+
+    const displayMove = (cell, marker) => {
+        cell.textContent = marker;
+    };
+
+    const displayTurn = (player) => {
+        display.textContent = `${player}'s turn!`;
+    };
+
+    const displayDraw = () => {
+        display.textContent = "It's a draw!"
+    }
+
+    const displayWin = (player) => {
+        display.textContent = `${player} wins!`
+    };
+
+
+    const createGrid = () => {
+        const grid = document.createElement('div');
+        grid.setAttribute('id', 'grid');
+
+        const topRow = createGridRow();
+        const middleRow = createGridRow();
+        const bottomRow = createGridRow();
+
+        topRow.className = "top";    
+        middleRow.className = "middle";    
+        bottomRow.className = "bottom";    
+
+
+        grid.append(topRow, middleRow, bottomRow);
+        content.appendChild(grid);
+
+        grid.addEventListener("click", (e) => {
+            gameInterface.movePlayed(e.target);
+        });
+    };
+
+    const createGridRow = () => {
+        const row = document.createElement('div');
+
+        const leftCell = document.createElement('button');
+        const centerCell = document.createElement('button');
+        const rightCell = document.createElement('button');
+
+        leftCell.className = "left";
+        centerCell.className = "center";
+        rightCell.className = "right";
+
+        row.append(leftCell, centerCell, rightCell);
+
+        return row;
+    };
+
+    const removeGrid = () => {
+        let child = content.lastElementChild;
+        while (child) {
+            content.removeChild(child);
+            child = content.lastElementChild;
+        }
+    };
+
+    return {createGrid, removeGrid, displayMove, displayTurn, displayDraw, displayWin};
 })();

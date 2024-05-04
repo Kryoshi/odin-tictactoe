@@ -1,10 +1,17 @@
+@font-face {
+    font-family: 'Game Font';
+    src: url(fonts/UnsteadyOversteer.woff2) format(woff2);
+    font-weight: normal;
+    font-style: normal;
+}
+
 * {
     box-sizing: border-box;
 }
 
 :root {
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    font-size: 16px;
+    font-size: calc(8px + 1vw);
 
     --color-theme-main: #0c0a09;
     --color-theme-main-bg: #09090b;
@@ -15,9 +22,9 @@
 
     --color-theme-user: #059669;
 
-    --color-theme-read: #059669;
-    --color-theme-unread: #f59e0b;
-    --color-theme-delete: #ef4444;
+    --color-theme-positive: #059669;
+    --color-theme-mixed: #f59e0b;
+    --color-theme-negative: #ef4444;
 }
 
 h1,h2,h3,h4,h5,h6,p,a {
@@ -27,6 +34,7 @@ h1,h2,h3,h4,h5,h6,p,a {
 }
 
 button {
+    font: inherit;
     appearance: none;
     color: inherit;
     cursor: pointer;
@@ -77,7 +85,79 @@ html, body {
     height: 100%
 }
 
-.grid button {
-    width: 5rem;
+header {
     height: 5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+header form {
+    display: flex;
+    gap: 5rem;
+}
+
+header form span {
+    font-family: 'Game Font';
+
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+header form input {
+    height: 2rem;
+    font-size: 1rem
+}
+
+#content {
+    display: flex;
+    justify-content: center;
+}
+
+#grid {
+    display: grid;
+    grid-auto-rows: 5rem;
+    justify-items: center;
+    margin-bottom: 2rem;
+}
+
+#grid > div {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 5rem;
+}
+
+#grid button {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+
+    background: none;
+    border: none;
+
+    font-family: 'Game Font';
+    font-size: 3rem
+}
+
+#grid .top {
+    border-bottom: 4px double var(--color-theme-main);
+}
+
+#grid .bottom {
+    border-top: 4px double var(--color-theme-main);
+}
+
+#grid .left {
+    border-right: 4px double var(--color-theme-main);
+}
+
+#grid .right {
+    border-left: 4px double var(--color-theme-main);
+}
+
+#display {
+    display: flex;
+    justify-content: center;
 }
